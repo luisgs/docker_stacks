@@ -1,0 +1,26 @@
+version: ${COMP_VERSION}
+services:
+  Dashy:
+   image: lissy93/dashy:latest
+   container_name: Dashy
+   restart: always
+   volumes:
+     - ${BASEDATAPATH}/dashy/conf.yml:/app/public/conf.yml
+
+  Duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - TZ=${TZ}
+      - SUBDOMAINS=${PUBLICIP}
+      - TOKEN=${DUCKTOKEN}
+      - LOG_FILE=false #optional
+    volumes:
+      - ${BASEDATAPATH}/duckdns:/config #optional
+    restart: unless-stopped
+  
+#networks:
+ # ngingx-network:
+  #  name: ngingx-network
