@@ -1,0 +1,107 @@
+version: ${COMP_VERSION}
+services:
+  flexget:
+    image: wiserain/flexget #:3.3.4
+    container_name: Flexget
+    restart: unless-stopped
+    ports :
+      - 5050:5050
+    volumes:
+      - ${BASEDATAPATH}/flexget/data:/data
+      - ${BASEDATAPATH}/flexget/config/:/config
+    environment:
+#      - PUID=911
+#      - PGID=911
+      - TZ=${TZ}
+      - FG_WEBUI_PASSWD=${PASSWORD}
+      - FLEXGET_LOG_LEVEL=debug
+
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      #- PUID=129
+      #- PGID=136
+      - TZ=${TZ}
+      #- TRANSMISSION_WEB_HOME=/combustion-release/ #optional
+      # access is covered via NGINX proxy
+#      - USER=user  #optional
+#      - PASS=password #optional
+#      - WHITELIST=192.168.123.123 #optional
+      #- PEERPORT=peerport #optional
+#      - HOST_WHITELIST=dnsname list #optional
+      - UMASK = 2
+    volumes:
+      - ${BASEDATAPATH}/transmission:/config
+      - /home/local_user/Downloads:/downloads
+      - /home/local_user/Videos/:/home/local_user/Videos/
+      #- /path/to/watch/folder:/watch
+    ports:
+     - 9091:9091
+     - 51413:51413
+     - 51413:51413/udp
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${BASEDATAPATH}/sonarr:/config
+      - /home/local_user/Videos/Series:/tv
+      - /home/local_user/Downloads:/downloads #optional
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${BASEDATAPATH}/radarr/data/:/config
+      - /home/local_user/Videos/Movies:/movies #optional
+      - /home/local_user/Downloads:/downloads #optional
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${BASEDATAPATH}/prowlarr/data:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=${TZ}
+    ports:
+      - 5055:5055
+    volumes:
+      - ${BASEDATAPATH}/jellyseerr/config:/app/config
+    restart: unless-stopped
+
+
+networks:
+  default:
+    external:
+      name: ngingx-network
+    # volumes:
