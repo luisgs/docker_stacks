@@ -1,0 +1,56 @@
+version: ${COMP_VERSION}
+services:
+  home-assistant:
+    image: homeassistant/home-assistant:stable
+    container_name: home-assistant
+    privileged: true
+    restart: always
+    volumes:
+      - ${BASEDATAPATH}/homeassistant/config:/config
+      - ${BASEDATAPATH}/homeassistant/media:/media
+      - ${BASEDATAPATH}/homeassistant/db:/config/db
+      - ${BASEDATAPATH}/homeassistant/logs:/config/logs
+    environment:
+      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - UMASK=007
+    #ports:
+     # - 8123:8123
+
+
+  firefox:
+    image: lscr.io/linuxserver/firefox:latest
+    container_name: firefox
+    security_opt:
+      - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - ${BASEDATAPATH}/firefox/config:/config
+      - /home/local_user/Downloads:/downloads/
+    ports:
+      - 4000:3000
+      - 4001:3001
+    shm_size: "2gb"
+    restart: unless-stopped
+    
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE= 0 0 1 * * 1  # RUN every MONDAY at 1AM
+      - TZ=${TZ}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    # command: --interval 604800 # weekly # pihole home-assistant dashy alertmanager 
+    restart: always
+
+networks:
+  default:
+    external:
+      name: ngingx-network
