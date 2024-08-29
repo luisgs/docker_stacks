@@ -1,0 +1,34 @@
+version: ${COMP_VERSION}
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    hostname: pihole_docker
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 8080:80
+    environment:
+      TZ: ${TZ}
+      WEBPASSWORD: ${PASSWORD}
+    volumes:
+      - '${BASEDATAPATH}/pihole/etc-pihole:/etc/pihole'
+      - '${BASEDATAPATH}/pihole/resolv.conf:/etc/resolv.conf'
+      - '${BASEDATAPATH}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
+      #- /home/user/docker/data/pihole/etc-lighttpd:/etc/lighttpd
+      - /etc/hosts:/etc/hosts:ro
+    #network_mode: host
+
+  piholeExporter:
+    image: ekofr/pihole-exporter:latest
+    container_name: PiholeExporter
+    restart: unless-stopped
+    environment:
+      - PIHOLE_HOSTNAME=pihole
+      - PIHOLE_PORT=80
+      - PIHOLE_PASSWORD=${PASSWORD}
+      - PORT=9617
+    ports:
+      - 9617:9617
