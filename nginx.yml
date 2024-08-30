@@ -1,7 +1,7 @@
 version: ${COMP_VERSION}
 services:
   ngingx:
-    container_name: Ngingx
+    container_name: Nginx
     image: 'jc21/nginx-proxy-manager:latest'
     restart: always
     ports:
@@ -9,12 +9,12 @@ services:
       - '81:81'
       - '443:443'
     volumes:
-      - ${BASEDATAPATH}/ngingx/data:/data
-      - ${BASEDATAPATH}/ngingx/letsencrypt:/etc/letsencrypt
-      - ${BASEDATAPATH}/ngingx/config/nginx.conf
+      - ${BASEDATAPATH}/nginx/data:/data
+      - ${BASEDATAPATH}/nginx/letsencrypt:/etc/letsencrypt
+      - ${BASEDATAPATH}/nginx/config/nginx.conf
 
 
 networks:
   default:
     external:
-      name: ngingx-network
+      name: nginx-network
