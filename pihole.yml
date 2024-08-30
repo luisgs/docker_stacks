@@ -13,13 +13,23 @@ services:
     environment:
       TZ: ${TZ}
       WEBPASSWORD: ${PASSWORD}
-    volumes:
-      - '${BASEDATAPATH}/pihole/etc-pihole:/etc/pihole'
-      - '${BASEDATAPATH}/pihole/resolv.conf:/etc/resolv.conf'
-      - '${BASEDATAPATH}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
+#    volumes:
+      #- ${BASEDATAPATH}/pihole/etc-pihole:/etc/pihole
+      #- ${BASEDATAPATH}/pihole/resolv.conf:/etc/resolv.conf
+      #- ${BASEDATAPATH}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
       #- /home/user/docker/data/pihole/etc-lighttpd:/etc/lighttpd
-      - /etc/hosts:/etc/hosts:ro
+      #- /etc/hosts:/etc/hosts:ro
     #network_mode: host
+
+  orbital-sync:
+    image: mattwebbio/orbital-sync:1
+    environment:
+      PRIMARY_HOST_BASE_URL: 'http://192.168.0.36:8080'
+      PRIMARY_HOST_PASSWORD: ${PASSWORD}
+      SECONDARY_HOSTS_1_BASE_URL: 'http://192.168.49.31:8080'
+      SECONDARY_HOSTS_1_PASSWORD: ${PASSWORD}
+      INTERVAL_MINUTES: 60
+
 
   piholeExporter:
     image: ekofr/pihole-exporter:latest
