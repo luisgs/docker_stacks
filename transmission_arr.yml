@@ -35,8 +35,8 @@ services:
       - UMASK = 2
     volumes:
       - ${BASEDATAPATH}/transmission:/config
-      - /home/local_user/Downloads:/downloads
-      - /home/local_user/Videos/:/home/local_user/Videos/
+      - ${TRANSDOWNLOADS}/Downloads:/downloads
+      - ${TRANSVIDEOS}:/home/local_user/Videos/
       #- /path/to/watch/folder:/watch
     ports:
      - 9091:9091
@@ -53,8 +53,8 @@ services:
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/sonarr:/config
-      - /home/local_user/Videos/Series:/tv
-      - /home/local_user/Downloads:/downloads #optional
+      - ${TRANSVIDEOS}/Videos/Series:/tv
+      - ${TRANSDOWNLOADS}/Downloads:/downloads #optional
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -68,8 +68,8 @@ services:
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/radarr/data/:/config
-      - /home/local_user/Videos/Movies:/movies #optional
-      - /home/local_user/Downloads:/downloads #optional
+      - ${TRANSVIDEOS}/Videos/Movies:/movies #optional
+      - ${TRANSDOWNLOADS}/Downloads:/downloads #optional
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -103,5 +103,5 @@ services:
 networks:
   default:
     external:
-      name: ngingx-network
+      name: nginx_default
     # volumes:
