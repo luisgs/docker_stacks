@@ -1,4 +1,3 @@
-version: ${COMP_VERSION}
 services:
 
   Dashy:
