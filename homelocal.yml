@@ -1,5 +1,13 @@
 version: ${COMP_VERSION}
 services:
+
+  Dashy:
+   image: lissy93/dashy:latest
+   container_name: Dashy
+   restart: always
+   volumes:
+     - ${BASEDATAPATH}/dashy/conf.yml:/app/public/conf.yml
+
   home-assistant:
     image: homeassistant/home-assistant:stable
     container_name: home-assistant
@@ -30,7 +38,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/firefox/config:/config
-      - /home/local_user/Downloads:/downloads/
+      - ${SMBMEDIA}/Downloads:/downloads/
     ports:
       - 4000:3000
       - 4001:3001
