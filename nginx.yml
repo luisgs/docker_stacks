@@ -1,7 +1,6 @@
-version: ${COMP_VERSION}
 services:
-  ngingx:
-    container_name: Nginx
+  nginx:
+    container_name: nginx
     # user: admin@example.com
     # password: changeme
     image: 'jc21/nginx-proxy-manager:latest'
@@ -11,11 +10,6 @@ services:
       - '81:81'
       - '443:443'
     volumes:
-      - ${BASEDATAPATH}/ngingx/data:/data
-      - ${BASEDATAPATH}/ngingx/letsencrypt:/etc/letsencrypt
-      - ${BASEDATAPATH}/ngingx/config/nginx.conf
-
-networks:
-  default:
-    external:
-      name: nginx_default
+      - ${BASEDATAPATH}/nginx/data:/data
+      - ${BASEDATAPATH}/nginx/letsencrypt:/etc/letsencrypt
+      - ${BASEDATAPATH}/nginx/config/nginx.conf
