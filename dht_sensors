@@ -1,0 +1,26 @@
+services:
+  dht22_ext:
+    image: paneraccoon/dht22_docker:latest
+    container_name: DHT22_external
+    privileged: true
+    restart: unless-stopped
+    volumes:
+      - /sys:/sys 
+    environment:
+      - 'pin=17'
+      - 'sleep=30'
+    ports:
+     - 8010:8000
+
+  dht22_int:
+    image: paneraccoon/dht22_docker:latest
+    container_name: DHT22_internal
+    privileged: true
+    restart: unless-stopped
+    volumes:
+      - /sys:/sys 
+    environment:
+      - 'pin=4'
+      - 'sleep=30'
+    ports:
+     - 8020:8000
