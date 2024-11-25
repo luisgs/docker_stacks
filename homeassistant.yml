@@ -1,0 +1,24 @@
+services:
+  home-assistant:
+    image: homeassistant/home-assistant:stable
+    container_name: homeassistant
+    restart: always
+    volumes:
+      - ${BASEDATAPATH}/homeassistant/config:/config
+      - ${BASEDATAPATH}/homeassistant/media:/media
+      - ${BASEDATAPATH}/homeassistant/db:/config/db
+      - ${BASEDATAPATH}/homeassistant/logs:/config/logs
+      # scripts
+      - ${BASEDATAPATH}/homeassistant/scripts:/scripts
+    devices:
+      # zigbee USB
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    environment:
+      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - UMASK=007
+    network_mode: host
+    privileged: true
+    ports:
+      - 8123:8123
