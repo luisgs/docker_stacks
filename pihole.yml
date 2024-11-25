@@ -1,10 +1,9 @@
-version: ${COMP_VERSION}
 services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
     restart: unless-stopped
-    hostname: pihole_docker
+    hostname: rpi
     # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
     ports:
       - 53:53/tcp
@@ -13,22 +12,29 @@ services:
     environment:
       TZ: ${TZ}
       WEBPASSWORD: ${PASSWORD}
-#    volumes:
-      #- ${BASEDATAPATH}/pihole/etc-pihole:/etc/pihole
+    dns:
+      - 127.0.0.1 
+    volumes:
+      - '${BASEDATAPATH}/pihole/etc-pihole:/etc/pihole'
+      - /etc/hosts:/etc/hosts:ro
       #- ${BASEDATAPATH}/pihole/resolv.conf:/etc/resolv.conf
-      #- ${BASEDATAPATH}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+      #- '${BASEDATAPATH}/pihole/etc-dnsmasq.d:/etc/dnsmasq.d'
       #- /home/user/docker/data/pihole/etc-lighttpd:/etc/lighttpd
-      #- /etc/hosts:/etc/hosts:ro
-    #network_mode: host
+    networks:
+      pihole:
+        ipv4_address: 172.19.0.6
 
-  orbital-sync:
-    image: mattwebbio/orbital-sync:1
-    environment:
-      PRIMARY_HOST_BASE_URL: 'http://192.168.0.36:8080'
-      PRIMARY_HOST_PASSWORD: ${PASSWORD}
-      SECONDARY_HOSTS_1_BASE_URL: 'http://192.168.49.31:8080'
-      SECONDARY_HOSTS_1_PASSWORD: ${PASSWORD}
-      INTERVAL_MINUTES: 60
+  #orbital-sync:
+#    image: mattwebbio/orbital-sync:1
+#    environment:
+#      TZ: ${TZ}
+#      PRIMARY_HOST_BASE_URL: 'http://192.168.0.35:8080'
+#      PRIMARY_HOST_PASSWORD: ${PASSWORD}
+#      SECONDARY_HOSTS_1_BASE_URL: 'http://192.168.36.102:8080'
+#      SECONDARY_HOSTS_1_PASSWORD: ${PASSWORD}
+#      SECONDARY_HOSTS_2_BASE_URL: 'http://192.168.0.36:8080'
+#      SECONDARY_HOSTS_2_PASSWORD: ${PASSWORD}
+#      INTERVAL_MINUTES: 60
 
 
   piholeExporter:
@@ -42,3 +48,13 @@ services:
       - PORT=9617
     ports:
       - 9617:9617
+    networks:
+      pihole:
+        ipv4_address: 172.19.0.7
+
+networks:
+  pihole:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/24
