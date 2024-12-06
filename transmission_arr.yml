@@ -1,29 +1,31 @@
-version: ${COMP_VERSION}
+
 services:
   flexget:
-    image: wiserain/flexget #:3.3.4
-    container_name: Flexget
+    image: lscr.io/linuxserver/flexget:latest
+    container_name: flexget
     restart: unless-stopped
     ports :
       - 5050:5050
     volumes:
-      - ${BASEDATAPATH}/flexget/data:/data
-      - ${BASEDATAPATH}/flexget/config/:/config
+      - ${BASEDATAPATH}/flexget/data:/config
+      # - ${BASEDATAPATH}/flexget/data:/data
     environment:
-#      - PUID=911
-#      - PGID=911
+      - PUID=3001
+      - PGID=3001
       - TZ=${TZ}
-      - FG_WEBUI_PASSWD=${PASSWORD}
-      - FLEXGET_LOG_LEVEL=debug
+      - FG_WEBUI_PASSWORD=${PASSWORD}
+      - FG_CONFIG_FILE=/config/.flexget/config.yml
+      - FG_LOG_LEVEL=debug
+      - FG_LOG_FILE=/config/flexget.log
 
   transmission:
     image: lscr.io/linuxserver/transmission:latest
     container_name: transmission
     environment:
-      - PUID=1000
-      - PGID=1000
-      #- PUID=129
-      #- PGID=136
+      - PUID=3001
+      - PGID=3001
+ #     - PUID=0
+ #     - PGID=0
       - TZ=${TZ}
       #- TRANSMISSION_WEB_HOME=/combustion-release/ #optional
       # access is covered via NGINX proxy
@@ -32,29 +34,41 @@ services:
 #      - WHITELIST=192.168.123.123 #optional
       #- PEERPORT=peerport #optional
 #      - HOST_WHITELIST=dnsname list #optional
-      - UMASK = 2
+   #   - UMASK = 2
     volumes:
       - ${BASEDATAPATH}/transmission:/config
-      - ${TRANSDOWNLOADS}/Downloads:/downloads
-      - ${TRANSVIDEOS}:/home/local_user/Videos/
+      - ${JELLYMEDIA}/Downloads:/Downloads
+      - ${JELLYMEDIA}/Movies:/Movies
+      - ${JELLYMEDIA}/Peliculas:/Peliculas
+      - ${JELLYMEDIA}/FilmyCZ:/FilmyCZ
+      - ${JELLYMEDIA}/Series:/Series
+      - ${JELLYMEDIA}/SeriesES:/SeriesES
+      - ${JELLYMEDIA}/SerialiCZ:/SerialiCZ
+      - ${JELLYMEDIA}/SerialiCZ:/AnimeSeries
       #- /path/to/watch/folder:/watch
     ports:
      - 9091:9091
      - 51413:51413
-     - 51413:51413/udp
+     #- 51413:51413/udp
     restart: unless-stopped
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=3001
+      - PGID=3001
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/sonarr:/config
-      - ${TRANSVIDEOS}/Videos/Series:/tv
-      - ${TRANSDOWNLOADS}/Downloads:/downloads #optional
+      - ${JELLYMEDIA}/Downloads:/Downloads
+      - ${JELLYMEDIA}/Movies:/Movies
+      - ${JELLYMEDIA}/Peliculas:/Peliculas
+      - ${JELLYMEDIA}/FilmyCZ:/FilmyCZ
+      - ${JELLYMEDIA}/Series:/Series
+      - ${JELLYMEDIA}/SeriesES:/SeriesES
+      - ${JELLYMEDIA}/SerialiCZ:/SerialiCZ
+      - ${JELLYMEDIA}/SerialiCZ:/AnimeSeries
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -63,23 +77,123 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=3001
+      - PGID=3001
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/radarr/data/:/config
-      - ${TRANSVIDEOS}/Videos/Movies:/movies #optional
-      - ${TRANSDOWNLOADS}/Downloads:/downloads #optional
+      - ${JELLYMEDIA}/Downloads:/Downloads
+      - ${JELLYMEDIA}/Movies:/Movies
+      - ${JELLYMEDIA}/Peliculas:/Peliculas
+      - ${JELLYMEDIA}/FilmyCZ:/FilmyCZ
+      - ${JELLYMEDIA}/Series:/Series
+      - ${JELLYMEDIA}/SeriesES:/SeriesES
+      - ${JELLYMEDIA}/SerialiCZ:/SerialiCZ
+      - ${JELLYMEDIA}/SerialiCZ:/AnimeSeries
     ports:
       - 7878:7878
+    restart: unless-stopped
+
+# Vesion para descargar en CASTELLANO solamente
+  radarres:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarres
+    environment:
+      - PUID=3001
+      - PGID=3001
+      - TZ=${TZ}
+    volumes:
+      # Folder has to be changed! Careful!
+      - ${BASEDATAPATH}/radarres/data/:/config
+      - ${JELLYMEDIA}/Downloads:/Downloads
+      - ${JELLYMEDIA}/Movies:/Movies
+      - ${JELLYMEDIA}/Peliculas:/Peliculas
+      - ${JELLYMEDIA}/FilmyCZ:/FilmyCZ
+      - ${JELLYMEDIA}/Series:/Series
+      - ${JELLYMEDIA}/SeriesES:/SeriesES
+      - ${JELLYMEDIA}/SerialiCZ:/SerialiCZ
+      - ${JELLYMEDIA}/SerialiCZ:/AnimeSeries
+    ports:
+    # change port as well
+      - 7879:7878
+    restart: unless-stopped
+
+  sonarres:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarres
+    environment:
+      - PUID=3001
+      - PGID=3001
+      - TZ=${TZ}
+    volumes:      
+      # Folder has to be changed! Careful!
+      - ${BASEDATAPATH}/sonarres:/config
+      - ${JELLYMEDIA}/Downloads:/Downloads
+      - ${JELLYMEDIA}/Movies:/Movies
+      - ${JELLYMEDIA}/Peliculas:/Peliculas
+      - ${JELLYMEDIA}/FilmyCZ:/FilmyCZ
+      - ${JELLYMEDIA}/Series:/Series
+      - ${JELLYMEDIA}/SeriesES:/SeriesES
+      - ${JELLYMEDIA}/SerialiCZ:/SerialiCZ
+      - ${JELLYMEDIA}/SerialiCZ:/AnimeSeries
+    ports:
+      # change port as well
+      - 8990:8989
+    restart: unless-stopped
+
+# instancias para checo
+  radarrcz:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarrcz
+    environment:
+      - PUID=3001
+      - PGID=3001
+      - TZ=${TZ}
+    volumes:
+      # Folder has to be changed! Careful!
+      - ${BASEDATAPATH}/radarrcz/data/:/config
+      - ${JELLYMEDIA}/Downloads:/Downloads
+      - ${JELLYMEDIA}/Movies:/Movies
+      - ${JELLYMEDIA}/Peliculas:/Peliculas
+      - ${JELLYMEDIA}/FilmyCZ:/FilmyCZ
+      - ${JELLYMEDIA}/Series:/Series
+      - ${JELLYMEDIA}/SeriesES:/SeriesES
+      - ${JELLYMEDIA}/SerialiCZ:/SerialiCZ
+      - ${JELLYMEDIA}/SerialiCZ:/AnimeSeries
+    ports:
+    # change port as well
+      - 7880:7878
+    restart: unless-stopped
+
+  sonarrcz:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarrcz
+    environment:
+      - PUID=3001
+      - PGID=3001
+      - TZ=${TZ}
+    volumes:      
+      # Folder has to be changed! Careful!
+      - ${BASEDATAPATH}/sonarrcz:/config
+      - ${JELLYMEDIA}/Downloads:/Downloads
+      - ${JELLYMEDIA}/Movies:/Movies
+      - ${JELLYMEDIA}/Peliculas:/Peliculas
+      - ${JELLYMEDIA}/FilmyCZ:/FilmyCZ
+      - ${JELLYMEDIA}/Series:/Series
+      - ${JELLYMEDIA}/SeriesES:/SeriesES
+      - ${JELLYMEDIA}/SerialiCZ:/SerialiCZ
+      - ${JELLYMEDIA}/SerialiCZ:/AnimeSeries
+    ports:
+      # change port as well
+      - 8991:8989
     restart: unless-stopped
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=3001
+      - PGID=3001
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/prowlarr/data:/config
@@ -91,6 +205,8 @@ services:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
     environment:
+      - PUID=3001
+      - PGID=3001
       - LOG_LEVEL=debug
       - TZ=${TZ}
     ports:
@@ -98,6 +214,7 @@ services:
     volumes:
       - ${BASEDATAPATH}/jellyseerr/config:/app/config
     restart: unless-stopped
+
 
 
 networks:
