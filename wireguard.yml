@@ -10,6 +10,7 @@ services:
       - PASSWORD_HASH=${WGHASH}
       - WG_DEFAULT_DNS=${INTERNALPIHOLE},1.1.1.1
       - PEERDNS=auto #optional
+      - WG_ALLOWED_IPS=0.0.0.0/1, 128.0.0.0/1, ::/1, 8000::/1
       #- WG_DEVICE="wg0"
     ports:
       # VPN port
