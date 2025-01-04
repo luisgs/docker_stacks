@@ -16,7 +16,7 @@ services:
     environment:
       - TZ=${TZ}
       - PUID=${UID}
-      - PGID=${UID}
+      - PGID=${GID}
       - UMASK=007
     network_mode: host
     privileged: true
