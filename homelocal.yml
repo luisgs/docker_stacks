@@ -50,6 +50,7 @@ services:
     container_name: watchtower
     environment:
       - WATCHTOWER_CLEANUP=true
+      # - WATCHTOWER_POLL_INTERVAL=200
       - WATCHTOWER_SCHEDULE= 0 0 1 * * 1  # RUN every MONDAY at 1AM
       - TZ=${TZ}
     volumes:
