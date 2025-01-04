@@ -11,12 +11,12 @@ services:
       # scripts
       - ${BASEDATAPATH}/homeassistant/scripts:/scripts
     devices:
-      # zigbee USB
+    # zigbee USB
       - /dev/ttyUSB0:/dev/ttyUSB0
     environment:
       - TZ=${TZ}
-      - PUID=1000
-      - PGID=1000
+      - PUID=${UID}
+      - PGID=${UID}
       - UMASK=007
     network_mode: host
     privileged: true
