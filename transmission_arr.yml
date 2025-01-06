@@ -10,8 +10,8 @@ services:
       - ${BASEDATAPATH}/flexget/data:/config
       # - ${BASEDATAPATH}/flexget/data:/data
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - TZ=${TZ}
       - FG_WEBUI_PASSWORD=${PASSWORD}
       - FG_CONFIG_FILE=/config/.flexget/config.yml
@@ -22,8 +22,8 @@ services:
     image: lscr.io/linuxserver/transmission:latest
     container_name: transmission
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
  #     - PUID=0
  #     - PGID=0
       - TZ=${TZ}
@@ -56,8 +56,8 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/sonarr:/config
@@ -77,8 +77,8 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/radarr/data/:/config
@@ -99,8 +99,8 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarres
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - TZ=${TZ}
     volumes:
       # Folder has to be changed! Careful!
@@ -122,8 +122,8 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarres
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - TZ=${TZ}
     volumes:      
       # Folder has to be changed! Careful!
@@ -146,8 +146,8 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarrcz
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - TZ=${TZ}
     volumes:
       # Folder has to be changed! Careful!
@@ -169,8 +169,8 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarrcz
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - TZ=${TZ}
     volumes:      
       # Folder has to be changed! Careful!
@@ -192,8 +192,8 @@ services:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/prowlarr/data:/config
@@ -205,8 +205,8 @@ services:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
     environment:
-      - PUID=3001
-      - PGID=3001
+      - PUID={UID}
+      - PGID={GID}
       - LOG_LEVEL=debug
       - TZ=${TZ}
     ports:
