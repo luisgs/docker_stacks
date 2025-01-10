@@ -25,6 +25,7 @@ services:
         ipv4_address: 172.19.0.6
 
   #orbital-sync:
+#    container_name: orbital-sync
 #    image: mattwebbio/orbital-sync:1
 #    environment:
 #      TZ: ${TZ}
@@ -35,6 +36,7 @@ services:
 #      SECONDARY_HOSTS_2_BASE_URL: 'http://192.168.0.36:8080'
 #      SECONDARY_HOSTS_2_PASSWORD: ${PASSWORD}
 #      INTERVAL_MINUTES: 60
+#    restart: unless-stopped
 
 
   piholeExporter:
