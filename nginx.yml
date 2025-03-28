@@ -13,3 +13,9 @@ services:
       - ${BASEDATAPATH}/nginx/data:/data
       - ${BASEDATAPATH}/nginx/letsencrypt:/etc/letsencrypt
       - ${BASEDATAPATH}/nginx/config/nginx.conf
+    networks: 
+      - pihole_pihole
+
+networks:
+  pihole_pihole:
+    external: true
