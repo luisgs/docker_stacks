@@ -19,6 +19,13 @@ services:
       - PGID=${GID}
       - UMASK=007
     network_mode: host
-    privileged: true
+  #  privileged: true
+    # Networking. We are behind NGINX
     ports:
       - 8123:8123
+    #networks: 
+      #- pihole_pihole
+
+#networks:
+  #pihole_pihole:
+    #external: true
