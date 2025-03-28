@@ -3,7 +3,7 @@ services:
     container_name: pihole
     image: pihole/pihole:latest
     restart: unless-stopped
-    hostname: rpi
+    hostname: NUC
     # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
     ports:
       - 53:53/tcp
@@ -25,7 +25,6 @@ services:
         ipv4_address: 172.19.0.6
 
   #orbital-sync:
-#    container_name: orbital-sync
 #    image: mattwebbio/orbital-sync:1
 #    environment:
 #      TZ: ${TZ}
@@ -36,7 +35,6 @@ services:
 #      SECONDARY_HOSTS_2_BASE_URL: 'http://192.168.0.36:8080'
 #      SECONDARY_HOSTS_2_PASSWORD: ${PASSWORD}
 #      INTERVAL_MINUTES: 60
-#    restart: unless-stopped
 
 
   piholeExporter:
@@ -53,6 +51,18 @@ services:
     networks:
       pihole:
         ipv4_address: 172.19.0.7
+
+  netalert:
+    container_name: netalertx
+    image: jokobsk/netalertx:latest
+    network_mode: host
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - '${BASEDATAPATH}/netalertx/config:/app/config'
+      - '${BASEDATAPATH}/netalertx/db:/app/db'
+    ports:
+      - 20211:20211
 
 networks:
   pihole:
