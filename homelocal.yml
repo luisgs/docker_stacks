@@ -7,24 +7,25 @@ services:
    volumes:
      - ${BASEDATAPATH}/dashy/conf.yml:/app/public/conf.yml
 
-  home-assistant:
-    image: homeassistant/home-assistant:stable
-    container_name: home-assistant
-    privileged: true
-    restart: always
-    volumes:
-      - ${BASEDATAPATH}/homeassistant/config:/config
-      - ${BASEDATAPATH}/homeassistant/media:/media
-      - ${BASEDATAPATH}/homeassistant/db:/config/db
-      - ${BASEDATAPATH}/homeassistant/logs:/config/logs
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    env_file: stack.env
     environment:
-      - TZ=${TZ}
-      - PUID=1000
-      - PGID=1000
-      - UMASK=007
-    #ports:
-     # - 8123:8123
-
+      PUID: ${UID} # optional, your user id
+      PGID: ${GID} # optional, your group id
+      TZ: ${TZ}
+      HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS}
+    ports:
+      - 3000:3000
+    volumes:
+      - ${BASEDATAPATH}/homepage:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock:ro # optional, for docker integrations
+    restart: unless-stopped
+    dns:
+      - ${INTERNALPIHOLE}
+    networks: 
+      - pihole_pihole
 
   firefox:
     image: lscr.io/linuxserver/firefox:latest
@@ -32,17 +33,74 @@ services:
     security_opt:
       - seccomp:unconfined #optional
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${UID} #optional
+      - PGID=${GID} #optional
       - TZ=${TZ}
     volumes:
       - ${BASEDATAPATH}/firefox/config:/config
-      - ${SMBMEDIA}/Downloads:/downloads/
+      # Defaulted folder for downloads.
+      #- ${BASEDATAPATH}/firefox/Downloads:/config/Downloads
+      - ${BASEDATAPATH}/firefox/Downloads:/config/Downloads
     ports:
       - 4000:3000
       - 4001:3001
     shm_size: "2gb"
     restart: unless-stopped
+    networks: 
+      - pihole_pihole
+    dns:
+      - ${INTERNALPIHOLE}
+    
+
+  code-server:
+    image: lscr.io/linuxserver/code-server:4.96.4
+    container_name: code-server
+    environment:
+      - PUID=${UID} #optional
+      - PGID=${GID} #optional
+      - TZ=${TZ}
+      - PASSWORD=password #optional
+      #- HASHED_PASSWORD= #optional
+      #- SUDO_PASSWORD=password #optional
+      #- SUDO_PASSWORD_HASH= #optional
+      #- PROXY_DOMAIN=code-server.my.domain #optional
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      - ${BASEDATAPATH}/code-server/config:/config
+      # additionals
+      #- ${BASEDATAPATH}/homepage:/app/config # Make sure your local config directory exists
+    ports:
+      - 8443:8443
+    restart: unless-stopped
+    networks: 
+      - pihole_pihole
+
+  speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    container_name: speedtest-tracker
+    environment:
+      - PUID=${UID} #optional
+      - PGID=${GID} #optional
+      - TZ=${TZ}
+      - APP_KEY=base64:VET+v0jcvecJCVyncFVPPgBpjr5hPWLfYQdgHz4Wm98=
+      - APP_URL=
+      - DB_CONNECTION=sqlite
+      - SPEEDTEST_SCHEDULE="6 */2 * * *"
+      - APP_DEBUG=true
+      #- SPEEDTEST_SERVERS=61299
+      #- DB_HOST= #optional
+      #- DB_PORT= #optional
+      #- DB_DATABASE= #optional
+      #- DB_USERNAME= #optional
+      #- DB_PASSWORD= #optional
+      #- DISPLAY_TIMEZONE=Etc/UTC #optional
+      #- PRUNE_RESULTS_OLDER_THAN=0 #optional
+    volumes:
+      - ${BASEDATAPATH}/speedtest-tracker/data:/config
+    ports:
+      - 8008:80
+    restart: unless-stopped
+
     
 
   watchtower:
@@ -50,15 +108,17 @@ services:
     container_name: watchtower
     environment:
       - WATCHTOWER_CLEANUP=true
-      # - WATCHTOWER_POLL_INTERVAL=200
-      - WATCHTOWER_SCHEDULE= 0 0 1 * * 1  # RUN every MONDAY at 1AM
+      # interval in seconds
+      - WATCHTOWER_POLL_INTERVAL=18000
+      #- WATCHTOWER_SCHEDULE= 0 0 1 * * 1  # RUN every MONDAY at 1AM
       - TZ=${TZ}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     # command: --interval 604800 # weekly # pihole home-assistant dashy alertmanager 
     restart: always
 
+
+
 networks:
-  default:
-    external:
-      name: nginx_default
+  pihole_pihole:
+    external: true
